@@ -24,7 +24,7 @@ class CableSimExtension(omni.ext.IExt):
 
         self._window = None
 
-        # Menu entry under Window
+        # Menu entry under vtools
         self._menu_items = [
             MenuItemDescription(
                 name=WINDOW_TITLE,
@@ -33,13 +33,13 @@ class CableSimExtension(omni.ext.IExt):
                 onclick_fn=lambda *_: self._toggle_window(),
             )
         ]
-        omni.kit.menu.utils.add_menu_items(self._menu_items, name="Window")
+        omni.kit.menu.utils.add_menu_items(self._menu_items, name="vtools")
         carb.log_warn(f"[cable.sim] add_menu_items DONE for '{WINDOW_TITLE}'")
 
     def on_shutdown(self) -> None:
         carb.log_warn("[cable.sim] on_shutdown")
         if self._menu_items:
-            omni.kit.menu.utils.remove_menu_items(self._menu_items, name="Window")
+            omni.kit.menu.utils.remove_menu_items(self._menu_items, name="vtools")
         if self._window:
             self._window.destroy()
             self._window = None
