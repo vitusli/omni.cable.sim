@@ -1,6 +1,6 @@
 # Cable Simulation
 
-Adds a Cable Simulation extension for Isaac Sim.
+Adds a Cable Simulation extension for Isaac Sim using [Deformable Bodies (Beta)](https://docs.omniverse.nvidia.com/kit/docs/omni_physics/latest/dev_guide/deformables/deformable_bodies.html).
 
 ## Usage
 
