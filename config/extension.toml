@@ -1,0 +1,38 @@
+[package]
+title = "Cable Simulation"
+version = "0.1.0"
+description = "Procedural deformable cable simulation (volume / hex-mesh)."
+category = "Simulation"
+changelog = "docs/CHANGELOG.md"
+keywords = ["cable", "simulation", "deformable", "physics"]
+readme  = "docs/README.md"
+repository = ""
+
+
+[dependencies]
+"omni.usd" = {}
+"omni.ui" = {}
+"omni.kit.commands" = {}
+"omni.kit.menu.utils" = {}
+"omni.physx" = {}
+"omni.physx.commands" = {}
+
+
+[settings]
+
+
+# Main python module — publicly importable as `import cable.sim`.
+[[python.module]]
+name = "cable.sim"
+
+
+[documentation]
+pages = [
+    "docs/Overview.md",
+    "docs/CHANGELOG.md",
+]
+
+
+[[test]]
+dependencies = []
+args = []
