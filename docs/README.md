@@ -2,6 +2,8 @@
 
 Adds a Cable Simulation extension for Isaac Sim using [Deformable Bodies (Beta)](https://docs.omniverse.nvidia.com/kit/docs/omni_physics/latest/dev_guide/deformables/deformable_bodies.html).
 
+You need to activate the Deformable Bodies beta to make this work: https://docs.omniverse.nvidia.com/kit/docs/omni_physics/107.3/dev_guide/deformables_beta/deformable_authoring.html#enable-deformable-schema-beta
+
 ## Usage
 
 1. Add the parent folder of this extension as an extension search path in Isaac Sim.
