@@ -15,7 +15,7 @@ class CableSimExtension(omni.ext.IExt):
     """cable.sim — procedural deformable cables."""
 
     def on_startup(self, ext_id: str) -> None:
-        carb.log_warn(f"[cable.sim] on_startup ENTERED ({ext_id})")
+        carb.log_info(f"[cable.sim] on_startup ({ext_id})")
 
         from .commands.create_cable import CreateCableCommand
 
@@ -34,10 +34,10 @@ class CableSimExtension(omni.ext.IExt):
             )
         ]
         omni.kit.menu.utils.add_menu_items(self._menu_items, name="vtools")
-        carb.log_warn(f"[cable.sim] add_menu_items DONE for '{WINDOW_TITLE}'")
+        carb.log_info(f"[cable.sim] added menu item for '{WINDOW_TITLE}'")
 
     def on_shutdown(self) -> None:
-        carb.log_warn("[cable.sim] on_shutdown")
+        carb.log_info("[cable.sim] on_shutdown")
         if self._menu_items:
             omni.kit.menu.utils.remove_menu_items(self._menu_items, name="vtools")
         if self._window:
