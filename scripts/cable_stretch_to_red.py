@@ -18,9 +18,8 @@ import omni.usd
 from isaacsim.core.simulation_manager import IsaacEvents, SimulationManager
 from pxr import Gf, Sdf, UsdShade
 
-
 DEFORMABLE_ROOT = "/World/cable/Cable"
-SHADER_PATH = "/World/Looks/Cable_vis/Shader"
+SHADER_PATH = "/World/Looks/Cable/Shader"
 COLOR_ATTR = "inputs:diffuseColor"
 
 CRITICAL_STRETCH = 1.20
@@ -166,9 +165,7 @@ class CableStretchMonitor:
             try:
                 sim_view = tensors.create_simulation_view(backend)
                 sim_view.set_subspace_roots("/")
-                body_view = sim_view.create_volume_deformable_body_view(
-                    DEFORMABLE_ROOT
-                )
+                body_view = sim_view.create_volume_deformable_body_view(DEFORMABLE_ROOT)
                 carb.log_info(f"[cable stretch] Using tensor backend: {backend}")
                 return body_view
             except Exception as exc:

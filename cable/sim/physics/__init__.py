@@ -5,7 +5,12 @@ from .usd_utils import (
     ensure_physics_scene_exists,
 )
 from .deformable import create_volume_deformable
-from .material import create_deformable_material, bind_physics_material
+from .material import (
+    create_deformable_material,
+    bind_physics_material,
+    create_render_material,
+    bind_render_material,
+)
 from .rigid import create_anchor_rigid_body
 from .attachment import create_auto_attachment
 
@@ -17,6 +22,8 @@ __all__ = [
     "create_volume_deformable",
     "create_deformable_material",
     "bind_physics_material",
+    "create_render_material",
+    "bind_render_material",
     "create_anchor_rigid_body",
     "create_auto_attachment",
 ]

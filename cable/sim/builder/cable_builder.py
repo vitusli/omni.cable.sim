@@ -7,13 +7,15 @@ Produces a USD hierarchy matching the reference USDA:
       /Cube         Mesh  (CollisionAPI, MeshCollisionAPI=convexHull)
     /End            Xform (RigidBodyAPI, PhysxRigidBodyAPI) @ (0, 0, 0)
       /Cube         Mesh  (CollisionAPI, MeshCollisionAPI=convexHull)
+    /Looks          Scope
+      /Cable        Material (UsdPreviewSurface — render material)
     /Cable          root  (deformable body hierarchy)
       /cooking_mesh Mesh  (cylinder source)
       /simulation_mesh    TetMesh (created by auto cooker at runtime)
       /collision_mesh     TetMesh (created by auto cooker at runtime)
       /attachmentStart    Scope (auto attachment Cable <-> Start)
       /attachmentEnd      Scope (auto attachment Cable <-> End)
-      /Cable              Material (OmniPhysicsDeformableMaterialAPI)
+      /CablePhysics       Material (OmniPhysicsDeformableMaterialAPI)
 
 The auto pipeline (PhysxAutoDeformableBodyAPI) handles cooking at runtime.
 We do NOT call cook_auto_deformable_body — that is for the non-auto pipeline.
@@ -27,9 +29,13 @@ from pxr import Usd, UsdGeom, Gf, Sdf
 
 from ..core.spec import CableSpec
 from ..geometry.cylinder import build_cylinder_along_x
-from ..physics.usd_utils import ensure_physics_scene_exists
 from ..physics.deformable import create_volume_deformable
-from ..physics.material import create_deformable_material, bind_physics_material
+from ..physics.material import (
+    create_deformable_material,
+    bind_physics_material,
+    create_render_material,
+    bind_render_material,
+)
 from ..physics.rigid import create_anchor_rigid_body
 from ..physics.attachment import create_auto_attachment
 
@@ -60,15 +66,14 @@ def build_cable(spec: CableSpec, stage: Usd.Stage | None = None) -> str:
         carb.log_error("[cable.sim] No active USD stage.")
         return ""
 
-    ensure_physics_scene_exists(stage)
-
     root_path = spec.root_path or _pick_unique_root_path(stage)
     root_name = Sdf.Path(root_path).name  # e.g. "Cable"
     cooking_path = f"{root_path}/cooking_mesh"
     sim_mesh_path = f"{root_path}/simulation_mesh"
     coll_mesh_path = f"{root_path}/collision_mesh"
-    material_path = f"{root_path}/{root_name}"
+    physics_material_path = f"{root_path}/{root_name}Physics"
     parent_path = str(Sdf.Path(root_path).GetParentPath())
+    render_material_path = f"{parent_path}/Looks/{root_name}"
 
     # ------------------------------------------------------------------
     # 1. Root Xform + cooking source mesh
@@ -111,18 +116,24 @@ def build_cable(spec: CableSpec, stage: Usd.Stage | None = None) -> str:
         return ""
 
     # ------------------------------------------------------------------
-    # 3. Material
+    # 3. Materials
+    #    - Physics material  -> /World/Cable/CablePhysics (physics purpose)
+    #    - Render material    -> /World/Looks/Cable        (default purpose)
     # ------------------------------------------------------------------
     create_deformable_material(
         stage,
-        material_path,
+        physics_material_path,
         density=spec.density,
         youngs_modulus=spec.youngs_modulus,
         poissons_ratio=spec.poissons_ratio,
         dynamic_friction=spec.dynamic_friction,
         static_friction=spec.static_friction,
     )
-    bind_physics_material(stage, root_path, material_path)
+    bind_physics_material(stage, root_path, physics_material_path)
+
+    UsdGeom.Scope.Define(stage, f"{parent_path}/Looks")
+    create_render_material(stage, render_material_path)
+    bind_render_material(stage, root_path, render_material_path)
 
     # ------------------------------------------------------------------
     # 4. Anchors + auto attachments
