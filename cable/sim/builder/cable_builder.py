@@ -49,6 +49,9 @@ from ..physics.attachment import create_auto_attachment
 # Custom attribute stamped on every cable's group Xform.  Search a stage for
 # all prims that carry this attribute (== True) to enumerate every cable.
 CABLE_MARKER_ATTR = "cableSim:isCable"
+REST_LENGTH_ATTR = "cableSim:restLength"
+SIGNAL_THRESHOLD_ATTR = "cableSim:strainThreshold"
+CRITICAL_THRESHOLD_ATTR = "cableSim:criticalStrainThreshold"
 
 # Default name for the per-cable group Xform.
 CABLE_GROUP_BASE = "/World/CableSim"
@@ -91,6 +94,32 @@ def _mark_cable_group(prim: Usd.Prim) -> None:
             CABLE_MARKER_ATTR, Sdf.ValueTypeNames.Bool, custom=True
         )
     attr.Set(True)
+
+
+def _set_default_monitoring_attrs(prim: Usd.Prim, *, rest_length: float) -> None:
+    """Ensure cable monitoring attributes exist on the cable group prim."""
+    rest = prim.GetAttribute(REST_LENGTH_ATTR)
+    if not rest.IsValid():
+        rest = prim.CreateAttribute(
+            REST_LENGTH_ATTR, Sdf.ValueTypeNames.Float, custom=True
+        )
+    rest.Set(float(rest_length))
+
+    signal = prim.GetAttribute(SIGNAL_THRESHOLD_ATTR)
+    if not signal.IsValid():
+        signal = prim.CreateAttribute(
+            SIGNAL_THRESHOLD_ATTR, Sdf.ValueTypeNames.Float, custom=True
+        )
+    if signal.Get() is None:
+        signal.Set(0.10)
+
+    critical = prim.GetAttribute(CRITICAL_THRESHOLD_ATTR)
+    if not critical.IsValid():
+        critical = prim.CreateAttribute(
+            CRITICAL_THRESHOLD_ATTR, Sdf.ValueTypeNames.Float, custom=True
+        )
+    if critical.Get() is None:
+        critical.Set(0.20)
 
 
 def find_cable_groups(stage: Usd.Stage | None = None) -> list[Usd.Prim]:
@@ -151,6 +180,7 @@ def build_cable(spec: CableSpec, stage: Usd.Stage | None = None) -> str:
 
     group_prim = UsdGeom.Xform.Define(stage, group_path).GetPrim()
     _mark_cable_group(group_prim)
+    _set_default_monitoring_attrs(group_prim, rest_length=spec.length)
 
     root_name = Sdf.Path(root_path).name  # e.g. "Cable"
     cooking_path = f"{root_path}/cooking_mesh"

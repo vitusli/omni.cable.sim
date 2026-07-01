@@ -22,6 +22,11 @@ class CableSimExtension(omni.ext.IExt):
         omni.kit.commands.register(CreateCableCommand)
         self._command_cls = CreateCableCommand
 
+        from .stretch_monitor import CableStretchMonitor
+
+        self._stretch_monitor = CableStretchMonitor()
+        self._stretch_monitor.start()
+
         self._window = None
 
         # Menu entry under vtools
@@ -38,6 +43,9 @@ class CableSimExtension(omni.ext.IExt):
 
     def on_shutdown(self) -> None:
         carb.log_info("[cable.sim] on_shutdown")
+        if getattr(self, "_stretch_monitor", None) is not None:
+            self._stretch_monitor.stop()
+            self._stretch_monitor = None
         if self._menu_items:
             omni.kit.menu.utils.remove_menu_items(self._menu_items, name="vtools")
         if self._window:

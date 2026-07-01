@@ -34,6 +34,18 @@ class TestCableSimSmoke(omni.kit.test.AsyncTestCase):
         self.assertTrue(marker.IsValid())
         self.assertTrue(marker.Get())
 
+        rest_attr = group_prim.GetAttribute("cableSim:restLength")
+        self.assertTrue(rest_attr.IsValid())
+        self.assertAlmostEqual(rest_attr.Get(), 1.5)
+
+        signal_attr = group_prim.GetAttribute("cableSim:strainThreshold")
+        self.assertTrue(signal_attr.IsValid())
+        self.assertAlmostEqual(signal_attr.Get(), 0.10)
+
+        critical_attr = group_prim.GetAttribute("cableSim:criticalStrainThreshold")
+        self.assertTrue(critical_attr.IsValid())
+        self.assertAlmostEqual(critical_attr.Get(), 0.20)
+
     async def test_custom_dimensions(self):
         spec = CableSpec(length=2.0, radius=0.02, ring_count=50, radial_segments=12)
         path = build_cable(spec)
@@ -47,4 +59,3 @@ class TestCableSimSmoke(omni.kit.test.AsyncTestCase):
         self.assertEqual(len(groups), 2)
         paths = sorted(str(g.GetPath()) for g in groups)
         self.assertEqual(paths, ["/World/CableSim", "/World/CableSim_1"])
-
