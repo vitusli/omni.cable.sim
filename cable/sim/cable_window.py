@@ -152,7 +152,7 @@ class CableSimWindow(ui.Window):
                 m["root_path"] = _string_field(
                     "Root Path",
                     default="",
-                    tooltip="Stage prim path (leave empty for auto /World/Cable_N)",
+                    tooltip="Stage prim path (leave empty for auto /World/CableSim)",
                 )
 
                 # --- Geometry ---

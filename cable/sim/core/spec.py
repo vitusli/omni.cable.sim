@@ -16,7 +16,9 @@ class CableSpec:
     *root_path*'s local origin if the parent prim has a transform).
     """
 
-    # Where to place it in the stage. If None, builder picks /World/Cable_<n>.
+    # Where to place it in the stage. If None, builder picks /World/CableSim
+    # (or CableSim_<n>). Everything is grouped under a CableSim Xform that
+    # carries the cableSim:isCable marker attribute.
     root_path: Optional[str] = None
 
     # Geometry

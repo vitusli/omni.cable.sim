@@ -39,10 +39,14 @@ class CreateCableCommand(omni.kit.commands.Command):
         stage = omni.usd.get_context().get_stage()
         if stage is None:
             return
-        # Remove cable root and its anchors
-        parent = "/".join(self._created_path.split("/")[:-1]) or "/"
-        for prim_path in [self._created_path, f"{parent}/Start", f"{parent}/End"]:
-            if stage.GetPrimAtPath(prim_path).IsValid():
-                stage.RemovePrim(prim_path)
-                carb.log_info(f"[cable.sim] Removed {prim_path}")
+        # The cable root lives under its CableSim group Xform.  Removing the
+        # group removes the whole cable (Cable, Start, End, Looks) at once.
+        group_path = "/".join(self._created_path.split("/")[:-1]) or "/"
+        if group_path not in ("", "/") and stage.GetPrimAtPath(group_path).IsValid():
+            stage.RemovePrim(group_path)
+            carb.log_info(f"[cable.sim] Removed cable group {group_path}")
+        elif stage.GetPrimAtPath(self._created_path).IsValid():
+            # Fallback: no group parent — remove just the root.
+            stage.RemovePrim(self._created_path)
+            carb.log_info(f"[cable.sim] Removed {self._created_path}")
         self._created_path = ""
