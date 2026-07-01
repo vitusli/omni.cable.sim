@@ -369,8 +369,10 @@ class CableStretchMonitor:
     def _ensure_debug_material(self, stage: Usd.Stage) -> str:
         if not stage.GetPrimAtPath("/World").IsValid():
             UsdGeom.Xform.Define(stage, "/World")
-        UsdGeom.Scope.Define(stage, "/World/CableSimDebug")
-        UsdGeom.Scope.Define(stage, "/World/CableSimDebug/Looks")
+        if not stage.GetPrimAtPath("/World/CableSimDebug").IsValid():
+            UsdGeom.Scope.Define(stage, "/World/CableSimDebug")
+        if not stage.GetPrimAtPath("/World/CableSimDebug/Looks").IsValid():
+            UsdGeom.Scope.Define(stage, "/World/CableSimDebug/Looks")
 
         material = UsdShade.Material.Define(stage, DEBUG_MATERIAL_PATH)
         shader = UsdShade.Shader.Define(stage, f"{DEBUG_MATERIAL_PATH}/Shader")
@@ -434,6 +436,7 @@ class CableStretchMonitor:
 
         self._saved_bindings.clear()
         self._debug_active = False
+        self._remove_debug_material_if_present(stage)
         carb.log_info("[cable.sim] critical local strain resolved, debug material restored")
 
     def cleanup_stale_debug_bindings(self) -> None:
@@ -443,6 +446,7 @@ class CableStretchMonitor:
             return
 
         self._cleanup_stale_debug_bindings_for_stage(stage, force=True)
+        self._remove_debug_material_if_present(stage)
 
     def _cleanup_stale_debug_bindings_for_stage(
         self,
@@ -466,3 +470,7 @@ class CableStretchMonitor:
 
         self._saved_bindings.clear()
         self._debug_active = False
+
+    def _remove_debug_material_if_present(self, stage: Usd.Stage) -> None:
+        if stage.GetPrimAtPath("/World/CableSimDebug").IsValid():
+            stage.RemovePrim("/World/CableSimDebug")
