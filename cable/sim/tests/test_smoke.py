@@ -40,11 +40,19 @@ class TestCableSimSmoke(omni.kit.test.AsyncTestCase):
 
         signal_attr = group_prim.GetAttribute("cableSim:strainThreshold")
         self.assertTrue(signal_attr.IsValid())
-        self.assertAlmostEqual(signal_attr.Get(), 0.10)
+        self.assertAlmostEqual(signal_attr.Get(), 0.03)
 
         critical_attr = group_prim.GetAttribute("cableSim:criticalStrainThreshold")
         self.assertTrue(critical_attr.IsValid())
-        self.assertAlmostEqual(critical_attr.Get(), 0.20)
+        self.assertAlmostEqual(critical_attr.Get(), 0.06)
+
+        calib_attr = group_prim.GetAttribute("cableSim:startupCalibrationFrames")
+        self.assertTrue(calib_attr.IsValid())
+        self.assertEqual(calib_attr.Get(), 30)
+
+        min_edge_attr = group_prim.GetAttribute("cableSim:minRestEdgeLengthForStrain")
+        self.assertTrue(min_edge_attr.IsValid())
+        self.assertAlmostEqual(min_edge_attr.Get(), 1.0e-4)
 
     async def test_custom_dimensions(self):
         spec = CableSpec(length=2.0, radius=0.02, ring_count=50, radial_segments=12)

@@ -52,6 +52,8 @@ CABLE_MARKER_ATTR = "cableSim:isCable"
 REST_LENGTH_ATTR = "cableSim:restLength"
 SIGNAL_THRESHOLD_ATTR = "cableSim:strainThreshold"
 CRITICAL_THRESHOLD_ATTR = "cableSim:criticalStrainThreshold"
+STARTUP_CALIBRATION_FRAMES_ATTR = "cableSim:startupCalibrationFrames"
+MIN_REST_EDGE_LENGTH_ATTR = "cableSim:minRestEdgeLengthForStrain"
 
 # Default name for the per-cable group Xform.
 CABLE_GROUP_BASE = "/World/CableSim"
@@ -111,7 +113,7 @@ def _set_default_monitoring_attrs(prim: Usd.Prim, *, rest_length: float) -> None
             SIGNAL_THRESHOLD_ATTR, Sdf.ValueTypeNames.Float, custom=True
         )
     if signal.Get() is None:
-        signal.Set(0.10)
+        signal.Set(0.03)
 
     critical = prim.GetAttribute(CRITICAL_THRESHOLD_ATTR)
     if not critical.IsValid():
@@ -119,7 +121,27 @@ def _set_default_monitoring_attrs(prim: Usd.Prim, *, rest_length: float) -> None
             CRITICAL_THRESHOLD_ATTR, Sdf.ValueTypeNames.Float, custom=True
         )
     if critical.Get() is None:
-        critical.Set(0.20)
+        critical.Set(0.06)
+
+    calibration = prim.GetAttribute(STARTUP_CALIBRATION_FRAMES_ATTR)
+    if not calibration.IsValid():
+        calibration = prim.CreateAttribute(
+            STARTUP_CALIBRATION_FRAMES_ATTR,
+            Sdf.ValueTypeNames.Int,
+            custom=True,
+        )
+    if calibration.Get() is None:
+        calibration.Set(30)
+
+    min_edge_len = prim.GetAttribute(MIN_REST_EDGE_LENGTH_ATTR)
+    if not min_edge_len.IsValid():
+        min_edge_len = prim.CreateAttribute(
+            MIN_REST_EDGE_LENGTH_ATTR,
+            Sdf.ValueTypeNames.Float,
+            custom=True,
+        )
+    if min_edge_len.Get() is None:
+        min_edge_len.Set(1.0e-4)
 
 
 def find_cable_groups(stage: Usd.Stage | None = None) -> list[Usd.Prim]:

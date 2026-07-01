@@ -25,6 +25,7 @@ class CableSimExtension(omni.ext.IExt):
         from .stretch_monitor import CableStretchMonitor
 
         self._stretch_monitor = CableStretchMonitor()
+        self._stretch_monitor.cleanup_stale_debug_bindings()
         self._stretch_monitor.start()
 
         self._window = None
